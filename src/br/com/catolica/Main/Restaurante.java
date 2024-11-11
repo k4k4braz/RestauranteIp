@@ -21,10 +21,23 @@ public class Restaurante {
             System.out.println("1. Exibir Cardapio");
             System.out.println("2. Realizar Pedido");
             System.out.println("3. Sair");
-            System.out.print("Escolha uma opcao: ");
-            int opcao = scanner.nextInt();
-            scanner.nextLine();
+            int opcao = 0;
+            boolean opcaoValida = false;
+            while(!opcaoValida) {
+                System.out.print("Escolha uma opcao: ");
+                if (scanner.hasNextInt()) {
+                    opcao = scanner.nextInt(); // asdasdadasd
 
+                    if (opcao >= 1 && opcao <= 3) {
+                        opcaoValida = true;
+                    }else {
+                        System.out.println("Opcao invalida, tente novamente!");
+                    }
+                }else {
+                    System.out.println("Opcao invalida, por favor digite numeros.");
+                    scanner.nextLine();
+                }
+            }
             if (opcao == 1) {
                 exibirMenu();
             } else if (opcao == 2) {
@@ -56,6 +69,7 @@ public class Restaurante {
     }
 
     private static void realizarPedido() {
+        scanner.nextLine();
         System.out.print("Digite seu nome para iniciar o pedido: ");
         String nomeCliente = scanner.nextLine();
 
@@ -85,7 +99,7 @@ public class Restaurante {
                 System.out.println("Item invalido.");
             }
 
-            System.out.print("Deseja continuar fazendo o pedido? (S/N): ");
+            System.out.print("Deseja continuar fazendo o pedido: (S/N): ");
             String resposta = scanner.nextLine();
             if (resposta.equalsIgnoreCase("N")) {
                 continuar = false;
