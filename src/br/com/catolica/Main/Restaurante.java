@@ -4,7 +4,7 @@ import br.com.catolica.Classes.*;
 import br.com.catolica.Enums.CategoriaBebida;
 import br.com.catolica.Enums.CategoriaPrato;
 import br.com.catolica.Enums.TamanhoPorcao;
-
+import br.com.catolica.Interfaces.Pg;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -21,13 +21,13 @@ public class Restaurante {
             System.out.println("1. Exibir Cardapio");
             System.out.println("2. Realizar Pedido");
             System.out.println("3. Sair");
+
             int opcao = 0;
             boolean opcaoValida = false;
             while(!opcaoValida) {
                 System.out.print("Escolha uma opcao: ");
                 if (scanner.hasNextInt()) {
-                    opcao = scanner.nextInt(); // asdasdadasd
-
+                    opcao = scanner.nextInt();
                     if (opcao >= 1 && opcao <= 3) {
                         opcaoValida = true;
                     }else {
@@ -77,19 +77,53 @@ public class Restaurante {
         ArrayList<String> pedidos = new ArrayList<>();
         double valorTotal = 0.0;
 
+        int index = -1;
         while (continuar) {
             System.out.println("\nRealizando pedido...");
             exibirMenu();
-            System.out.print("Digite o numero do item que deseja pedir: ");
-            int index = scanner.nextInt() - 1;
-            scanner.nextLine();
+
+            boolean escolhaValida = false;
+            while (!escolhaValida) {
+                System.out.print("Digite o numero do item que deseja pedir: ");
+
+                if (scanner.hasNextInt()) {
+                    index = scanner.nextInt();
+                    scanner.nextLine();
+
+                    if (index >= 0 && index < 6) {
+                        escolhaValida = true;
+                    } else {
+                        System.out.println("Numero invalido, por favor, escolha um numero do menu.");
+                    }
+                } else {
+                    System.out.println("Entrada invalida, por favor, insira um numero.");
+                    scanner.nextLine();
+                }
+            }
 
             if (index >= 0 && index < itens.size()) {
                 Produto itemEscolhido = itens.get(index);
 
-                System.out.print("Quantas unidades voce deseja pedir de " + itemEscolhido.getNome() + "? ");
-                int quantidade = scanner.nextInt();
-                scanner.nextLine();
+                boolean entradaValida = false;
+                int quantidade = 0;
+
+                while (!entradaValida) {
+                    System.out.print("Quantas unidades voce deseja pedir de " + itemEscolhido.getNome() + "? ");
+
+                    if (scanner.hasNextInt()) {
+                        quantidade = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if (quantidade > 0) {
+                            entradaValida = true;
+                        } else {
+                            System.out.println("Por favor, digite uma quantidade positiva.");
+                        }
+                    } else {
+                        System.out.println("Entrada invalida, por favor, digite um numero.");
+                        scanner.nextLine();
+                    }
+                }
 
                 double valorPedido = itemEscolhido.getPreco() * quantidade;
                 valorTotal += valorPedido;
@@ -112,6 +146,7 @@ public class Restaurante {
         }
         System.out.printf("Valor Total: R$ %.2f\n", valorTotal);
         escolherGorjeta(valorTotal);
+
     }
 
     private static void escolherGorjeta(double valorTotal) {
@@ -123,19 +158,21 @@ public class Restaurante {
             System.out.println("2. 15%");
             System.out.println("3. 20%");
             System.out.print("Opção: ");
-            int opcaoGorjeta = scanner.nextInt();
-            scanner.nextLine();
 
-            if (opcaoGorjeta == 1) {
+            String entrada = scanner.nextLine();
+
+            if (entrada.equals("1")) {
                 porcentagem = 10;
-            } else if (opcaoGorjeta == 2) {
+            } else if (entrada.equals("2")) {
                 porcentagem = 15;
-            } else if (opcaoGorjeta == 3) {
+            } else if (entrada.equals("3")) {
                 porcentagem = 20;
             } else {
-                System.out.println("Opcao invalida, tente novamente.");
+                System.out.println("Entrada invalida, tente novamente.");
             }
         }
+
+        System.out.println("Porcentagem de gorjeta escolhida: " + porcentagem + "%");
 
         GorjetaGarcom gorjetaGarcom = new GorjetaGarcom(porcentagem);
         double gorjeta = gorjetaGarcom.calcularGorjeta(valorTotal);
@@ -143,5 +180,7 @@ public class Restaurante {
         System.out.printf("Gorjeta para o garcom: R$ %.2f\n", gorjeta);
         double valorFinal = valorTotal + gorjeta;
         System.out.printf("Valor Total com Gorjeta: R$ %.2f\n", valorFinal);
+        Pagamento pagamento = new Pagamento(valorFinal);
+        pagamento.realizarPagamento(valorFinal);
     }
 }
