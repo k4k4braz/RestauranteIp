@@ -52,12 +52,12 @@ public class Restaurante {
     }
 
     private static void inicializarMenu() {
-        itens.add(new Prato("Salada", 12.50, CategoriaPrato.Entrada, TamanhoPorcao.Pequeno));
+        itens.add(new Prato("Baguetes", 5.00, CategoriaPrato.Entrada, TamanhoPorcao.Pequeno));
         itens.add(new Prato("Lasanha", 22.00, CategoriaPrato.Principal, TamanhoPorcao.Grande));
-        itens.add(new Prato("Torta de Chocolate", 35.00, CategoriaPrato.Sobremesa, TamanhoPorcao.Pequeno));
-        itens.add(new Bebida("Suco de Maracuja", 5.00, CategoriaBebida.Suco));
-        itens.add(new Bebida("Refrigerante", 12.00, CategoriaBebida.Refri));
-        itens.add(new Bebida("Cerveja", 7.00, CategoriaBebida.Alcoolica));
+        itens.add(new Prato("Petit Gateau", 35.00, CategoriaPrato.Sobremesa, TamanhoPorcao.Pequeno));
+        itens.add(new Bebida("Maracuja", 5.00, CategoriaBebida.Suco));
+        itens.add(new Bebida("Coca-Cola", 12.00, CategoriaBebida.Refri));
+        itens.add(new Bebida("Skol", 7.00, CategoriaBebida.Alcoolica));
     }
 
     private static void exibirMenu() {
