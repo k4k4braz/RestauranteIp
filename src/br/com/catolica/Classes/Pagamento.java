@@ -2,8 +2,6 @@ package br.com.catolica.Classes;
 
 import br.com.catolica.Interfaces.Pg;
 
-import java.util.Scanner;
-
 public class Pagamento implements Pg{
     public double valorFinal;
 
