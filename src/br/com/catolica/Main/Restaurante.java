@@ -4,15 +4,14 @@ import br.com.catolica.Classes.*;
 import br.com.catolica.Enums.CategoriaBebida;
 import br.com.catolica.Enums.CategoriaPrato;
 import br.com.catolica.Enums.TamanhoPorcao;
-import br.com.catolica.Interfaces.Pg;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Restaurante {
-    private static ArrayList<Produto> itens = new ArrayList<>();
+    private static Produto[] itens;
     private static Scanner scanner = new Scanner(System.in);
-
+    private static Pessoa pessoa = new Pessoa("Kaue", "Atendente");
     public static void main(String[] args) {
+
         inicializarMenu();
 
         boolean sair = false;
@@ -24,16 +23,16 @@ public class Restaurante {
 
             int opcao = 0;
             boolean opcaoValida = false;
-            while(!opcaoValida) {
+            while (!opcaoValida) {
                 System.out.print("Escolha uma opcao: ");
                 if (scanner.hasNextInt()) {
                     opcao = scanner.nextInt();
                     if (opcao >= 1 && opcao <= 3) {
                         opcaoValida = true;
-                    }else {
+                    } else {
                         System.out.println("Opcao invalida, tente novamente!");
                     }
-                }else {
+                } else {
                     System.out.println("Opcao invalida, por favor digite numeros.");
                     scanner.nextLine();
                 }
@@ -41,6 +40,7 @@ public class Restaurante {
             if (opcao == 1) {
                 exibirMenu();
             } else if (opcao == 2) {
+                pessoa.apresentar();
                 realizarPedido();
             } else if (opcao == 3) {
                 sair = true;
@@ -52,19 +52,21 @@ public class Restaurante {
     }
 
     private static void inicializarMenu() {
-        itens.add(new Prato("Baguetes", 5.00, CategoriaPrato.Entrada, TamanhoPorcao.Pequeno));
-        itens.add(new Prato("Lasanha", 22.00, CategoriaPrato.Principal, TamanhoPorcao.Grande));
-        itens.add(new Prato("Petit Gateau", 35.00, CategoriaPrato.Sobremesa, TamanhoPorcao.Pequeno));
-        itens.add(new Bebida("Maracuja", 5.00, CategoriaBebida.Suco));
-        itens.add(new Bebida("Coca-Cola", 12.00, CategoriaBebida.Refri));
-        itens.add(new Bebida("Skol", 7.00, CategoriaBebida.Alcoolica));
+        itens = new Produto[]{
+                new Prato("Baguetes", 5.00, CategoriaPrato.Entrada, TamanhoPorcao.Pequeno),
+                new Prato("Lasanha", 22.00, CategoriaPrato.Principal, TamanhoPorcao.Grande),
+                new Prato("Petit Gateau", 35.00, CategoriaPrato.Sobremesa, TamanhoPorcao.Pequeno),
+                new Bebida("Maracuja", 5.00, CategoriaBebida.Suco),
+                new Bebida("Coca-Cola", 12.00, CategoriaBebida.Refri),
+                new Bebida("Skol", 7.00, CategoriaBebida.Alcoolica)
+        };
     }
 
     private static void exibirMenu() {
         System.out.println("\n- Cardapio do Restaurante -");
-        for (int i = 0; i < itens.size(); i++) {
+        for (int i = 0; i < itens.length; i++) {
             System.out.print((i + 1) + ". ");
-            itens.get(i).exibirDetalhes();
+            itens[i].exibirDetalhes();
         }
     }
 
@@ -74,7 +76,8 @@ public class Restaurante {
         String nomeCliente = scanner.nextLine();
 
         boolean continuar = true;
-        ArrayList<String> pedidos = new ArrayList<>();
+        String[] pedidos = new String[itens.length];
+        int pedidoIndex = 0;
         double valorTotal = 0.0;
 
         int index = -1;
@@ -90,7 +93,7 @@ public class Restaurante {
                     index = scanner.nextInt();
                     scanner.nextLine();
 
-                    if (index >= 0 && index < 6) {
+                    if (index >= 1 && index <= itens.length) {
                         escolhaValida = true;
                     } else {
                         System.out.println("Numero invalido, por favor, escolha um numero do menu.");
@@ -101,52 +104,62 @@ public class Restaurante {
                 }
             }
 
-            if (index >= 0 && index < itens.size()) {
-                Produto itemEscolhido = itens.get(index);
+            Produto itemEscolhido = itens[index - 1];
 
-                boolean entradaValida = false;
-                int quantidade = 0;
+            boolean entradaValida = false;
+            int quantidade = 0;
 
-                while (!entradaValida) {
-                    System.out.print("Quantas unidades voce deseja pedir de " + itemEscolhido.getNome() + "? ");
+            while (!entradaValida) {
+                System.out.print("Quantas unidades voce deseja pedir de " + itemEscolhido.getNome() + "? ");
 
-                    if (scanner.hasNextInt()) {
-                        quantidade = scanner.nextInt();
-                        scanner.nextLine();
+                if (scanner.hasNextInt()) {
+                    quantidade = scanner.nextInt();
+                    scanner.nextLine();
 
-                        if (quantidade > 0) {
-                            entradaValida = true;
-                        } else {
-                            System.out.println("Por favor, digite uma quantidade positiva.");
-                        }
+                    if (quantidade > 0) {
+                        entradaValida = true;
                     } else {
-                        System.out.println("Entrada invalida, por favor, digite um numero.");
-                        scanner.nextLine();
+                        System.out.println("Por favor, digite uma quantidade positiva.");
                     }
+                } else {
+                    System.out.println("Entrada invalida, por favor, digite um numero.");
+                    scanner.nextLine();
                 }
-
-                double valorPedido = itemEscolhido.getPreco() * quantidade;
-                valorTotal += valorPedido;
-
-                pedidos.add(itemEscolhido.getNome() + " (Quantidade: " + quantidade + ") - Preco: R$ " + valorPedido);
-            } else {
-                System.out.println("Item invalido.");
             }
 
-            System.out.print("Deseja continuar fazendo o pedido: (S/N): ");
-            String resposta = scanner.nextLine();
-            if (resposta.equalsIgnoreCase("N")) {
-                continuar = false;
+            double valorPedido = itemEscolhido.getPreco() * quantidade;
+            valorTotal += valorPedido;
+
+            pedidos[pedidoIndex++] = itemEscolhido.getNome() + " (Quantidade: " + quantidade + ") - Preco: R$ " + valorPedido;
+            pessoa.anotarPedido(itemEscolhido.getNome(), quantidade);
+
+            boolean respostaValida = false;
+            while (!respostaValida) {
+                System.out.print("Deseja continuar fazendo o pedido: (S/N): ");
+                String resposta = scanner.nextLine();
+
+                if (resposta.equalsIgnoreCase("S")) {
+                    System.out.println("Continuando o pedido...");
+                    respostaValida = true;
+                } else if (resposta.equalsIgnoreCase("N")) {
+                    continuar = false;
+                    respostaValida = true;
+                    System.out.println("Pedido encerrado.");
+                } else {
+                    System.out.println("Entrada invalida, por favor, digite apenas 'S' ou 'N'.");
+                }
             }
         }
 
         System.out.println("\n--- Resumo do Pedido de " + nomeCliente + " ");
         for (String pedido : pedidos) {
-            System.out.println(pedido);
+            if (pedido != null) {
+                System.out.println(pedido);
+            }
         }
+
         System.out.printf("Valor Total: R$ %.2f\n", valorTotal);
         escolherGorjeta(valorTotal);
-
     }
 
     private static void escolherGorjeta(double valorTotal) {
@@ -157,7 +170,7 @@ public class Restaurante {
             System.out.println("1. 10%");
             System.out.println("2. 15%");
             System.out.println("3. 20%");
-            System.out.print("Opção: ");
+            System.out.print("Opcao: ");
 
             String entrada = scanner.nextLine();
 
